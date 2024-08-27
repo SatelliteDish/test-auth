@@ -1,0 +1,5 @@
+/home/Michael/dataAnnotation/rust/rust_auth_server/target/debug/build/serde_json-04b7f1fd72475f7b/build_script_build-04b7f1fd72475f7b: /home/Michael/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde_json-1.0.127/build.rs
+
+/home/Michael/dataAnnotation/rust/rust_auth_server/target/debug/build/serde_json-04b7f1fd72475f7b/build_script_build-04b7f1fd72475f7b.d: /home/Michael/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde_json-1.0.127/build.rs
+
+/home/Michael/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde_json-1.0.127/build.rs:
