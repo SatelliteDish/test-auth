@@ -1,5 +1,6 @@
 use hyper::service::{make_service_fn, service_fn};
 use hyper::{Body, Method, Request, Response, Server, StatusCode};
+use hyper::header::{HeaderValue, ACCESS_CONTROL_ALLOW_ORIGIN};
 use serde::{Deserialize, Serialize};
 use jsonwebtoken::{encode, decode, Header, Validation, EncodingKey, DecodingKey};
 use std::env;
@@ -47,36 +48,44 @@ async fn start_server() -> Result<(), Box<dyn std::error::Error + Send + Sync>> 
 }
 
 // Request handler
+
+// Inside your request handler
 async fn handle_request(
     req: Request<Body>,
     users: Arc<HashMap<String, User>>,
 ) -> Result<Response<Body>, hyper::Error> {
-    match (req.method(), req.uri().path()) {
-        (&Method::POST, "/authenticate") => {
-            // Here would be logic to authenticate user, for simplicity we'll just generate a token
-            let token = create_jwt("1").unwrap();
-            Ok(Response::new(Body::from(token)))
-        },
-        (&Method::GET, "/user") => {
-            if let Some(auth_header) = req.headers().get("Authorization") {
-                let auth_header = auth_header.to_str().unwrap();
-                if let Ok(token_data) = validate_jwt(auth_header.replace("Bearer ", "").as_str()) {
-                    if let Some(user) = users.get(&token_data.claims.sub) {
-                        let user_json = serde_json::to_string(user).unwrap();
-                        return Ok(Response::new(Body::from(user_json)));
-                    }
-                }
-            }
-            Ok(Response::builder()
-               .status(StatusCode::UNAUTHORIZED)
-               .body(Body::from("Unauthorized"))
-               .unwrap())
-        },
-        _ => Ok(Response::builder()
-           .status(StatusCode::NOT_FOUND)
-           .body(Body::empty())
-           .unwrap()),
-    }
+let mut response = Response::new(Body::from("Your content here"));
+response.headers_mut().insert(
+    ACCESS_CONTROL_ALLOW_ORIGIN, 
+    HeaderValue::from_static("*") // Or specify your app's origin
+);
+    // match (req.method(), req.uri().path()) {
+    //     (&Method::POST, "/authenticate") => {
+    //         // Here would be logic to authenticate user, for simplicity we'll just generate a token
+    //         let token = create_jwt("1").unwrap();
+    //         Ok(Response::new(Body::from(token)))
+    //     },
+    //     (&Method::GET, "/user") => {
+    //         if let Some(auth_header) = req.headers().get("Authorization") {
+    //             let auth_header = auth_header.to_str().unwrap();
+    //             if let Ok(token_data) = validate_jwt(auth_header.replace("Bearer ", "").as_str()) {
+    //                 if let Some(user) = users.get(&token_data.claims.sub) {
+    //                     let user_json = serde_json::to_string(user).unwrap();
+    //                     return Ok(Response::new(Body::from(user_json)));
+    //                 }
+    //             }
+    //         }
+    //         Ok(Response::builder()
+    //            .status(StatusCode::UNAUTHORIZED)
+    //            .body(Body::from("Unauthorized"))
+    //            .unwrap())
+    //     },
+    //     _ => Ok(Response::builder()
+    //        .status(StatusCode::NOT_FOUND)
+    //        .body(Body::empty())
+    //        .unwrap()),
+    // }
+    Ok(response)
 }
 
 fn create_jwt(uid: &str) -> Result<String, jsonwebtoken::errors::Error> {
